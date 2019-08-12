@@ -1,0 +1,15 @@
+{
+  "name": "map-imager",
+  "version": "1.0.0",
+  "description": "Node package for screenshotting maps",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node index.js"
+  },
+  "author": "Erik Guntner",
+  "license": "ISC",
+  "dependencies": {
+    "puppeteer": "^1.19.0"
+  }
+}
