@@ -11,7 +11,20 @@ const config = {
 };
 
 const screenshotMap = async config => {
+  // TODO: define default configuration object.
+  // Overwrite object using Object.assign()
+  const defaultConfig = {
+    coordinates: [],
+    mapboxToken: '',
+    screenSize: [360, 640],
+    color: 'red',
+    lineWidth: 2,
+    padding: 5,
+  };
+
   try {
+    const updatedConfig = Object.assign(defaultConfig, config);
+
     // Loop over config object and contrust query string for URL
     const queryString = Object.keys(config).reduce((accum, key, i) => {
       let query = `${key}=${JSON.stringify(config[key])}`;
@@ -26,10 +39,13 @@ const screenshotMap = async config => {
     // open new browser
     const page = await browser.newPage();
 
-    // Stringify coords before using them as query string
-    // const coordsJSONStr = JSON.stringify(config.coordinates);
+    const URL =
+      process.env.NODE_ENV === 'production'
+        ? process.env.CLIENT_URL
+        : 'http://localhost:3000/?';
+
     // goto page with map sending coordintaes along
-    await page.goto(`${process.env.CLIENT_URL}${queryString}`, {
+    await page.goto(`${URL}${queryString}`, {
       waitUntil: 'networkidle0',
     });
 
@@ -64,9 +80,9 @@ const screenshotMap = async config => {
 const takeScreenShot = async coords => {
   try {
     const image = await screenshotMap(coords);
-    console.log(image);
+    return image;
   } catch (err) {
-    console.log('error mothafucka', err);
+    return err;
   }
 };
 
