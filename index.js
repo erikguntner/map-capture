@@ -29,7 +29,7 @@ const screenshotMap = async config => {
     // Stringify coords before using them as query string
     // const coordsJSONStr = JSON.stringify(config.coordinates);
     // goto page with map sending coordintaes along
-    await page.goto(`http://localhost:3000/?${queryString}`, {
+    await page.goto(`${process.env.CLIENT_URL}${queryString}`, {
       waitUntil: 'networkidle0',
     });
 
