@@ -1,12 +1,24 @@
 const puppeteer = require('puppeteer');
+require('dotenv').config();
 
 const Constants = require('./constants/index');
 const writeFileToDesktop = require('./utils/writeToDesktop');
 
-const coors = [[-117.731672, 34.106999], [-117.72708, 34.107004]];
+// Test Config Object
+const config = {
+  coordinates: Constants.coordinates,
+  mapboxToken: process.env.MAPBOX_TOKEN,
+};
 
-const screenshotMap = async coordinates => {
+const screenshotMap = async config => {
   try {
+    // Loop over config object and contrust query string for URL
+    const queryString = Object.keys(config).reduce((accum, key, i) => {
+      let query = `${key}=${JSON.stringify(config[key])}`;
+      if (i !== Object.keys(config).length - 1) query += '&';
+      return accum + query;
+    }, '');
+
     const browser = await puppeteer.launch({
       args: ['--no-sandbox', '--disable-setuid-sandbox'],
     });
@@ -15,15 +27,11 @@ const screenshotMap = async coordinates => {
     const page = await browser.newPage();
 
     // Stringify coords before using them as query string
-    const coordsJSONStr = JSON.stringify(coordinates);
-
+    // const coordsJSONStr = JSON.stringify(config.coordinates);
     // goto page with map sending coordintaes along
-    await page.goto(
-      `https://pacific-crag-45485.herokuapp.com/test?coords=${coordsJSONStr}`,
-      {
-        waitUntil: 'networkidle0',
-      }
-    );
+    await page.goto(`http://localhost:3000/?${queryString}`, {
+      waitUntil: 'networkidle0',
+    });
 
     // wait for map to load, call onLoad callback, and set state to make the h1 visible
     // await page.waitForSelector('h1');
@@ -35,7 +43,7 @@ const screenshotMap = async coordinates => {
       quality: 100,
       clip: {
         x: 0,
-        y: 70,
+        y: 0,
         width: 640,
         height: 360,
       },
@@ -62,4 +70,4 @@ const takeScreenShot = async coords => {
   }
 };
 
-takeScreenShot(Constants.coordinates);
+takeScreenShot(config);
